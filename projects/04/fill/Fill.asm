@@ -12,3 +12,59 @@
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
+
+@8192       // Amount of registers: (512 * 256) / 16
+D=A
+@n
+M=D         // n = 8192
+
+(PROG)
+   @SCREEN
+   D=A
+   @addr
+   M=D      // addr = 16384 (screen base)
+   
+   @i
+   M=0      // i = 0
+   
+   @KBD
+   D=M
+   @CLEAR
+   D;JEQ
+   @FILL
+   0;JMP
+      
+(FILL)
+   @color
+   M=-1     // color = "black"
+   @DRAW
+   0;JMP
+   
+(CLEAR)
+   @color
+   M=0      // color = "white"   
+   @DRAW
+   0;JMP
+   
+(DRAW)
+   @i
+   D=M
+   @n
+   D=D-M
+   @PROG
+   D;JEQ    // if i == n goto PROG
+   
+   @color
+   D=M
+   @addr
+   A=M
+   M=D      // RAM[addr] = color
+   
+   @i
+   M=M+1    // i = i + 1
+   @1
+   D=A
+   @addr
+   M=D+M    // addr = addr + 1
+   @DRAW
+   0;JMP    // goto DRAW
